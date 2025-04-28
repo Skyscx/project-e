@@ -1,7 +1,7 @@
-package me.skyscx.bankskyscx.annotation.command
+package me.skyscx.annotation
 
 /**
- * @created 24.04.2025
+ * @created 27.04.2025
  * @author Skyscx
  **/
 

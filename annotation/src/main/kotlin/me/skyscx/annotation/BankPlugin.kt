@@ -1,13 +1,16 @@
 package me.skyscx.annotation
 
 import kotlin.reflect.KClass
+import me.skyscx.protocol.Module
+
 
 /**
  * @created 27.04.2025
  * @author Skyscx
  **/
+
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class Plugin(
+annotation class BankPlugin(
 	val modules: Array<KClass<out Module>>,
 )

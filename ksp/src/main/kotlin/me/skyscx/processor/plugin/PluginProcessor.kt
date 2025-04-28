@@ -39,8 +39,8 @@ class PluginProcessor(
 ) : SymbolProcessor {
 
 	private var plugin: KSClassDeclaration? = null
-	private var userEntity: KSClassDeclaration? = null
-	private var tempUserEntity: KSClassDeclaration? = null
+//	private var userEntity: KSClassDeclaration? = null
+//	private var tempUserEntity: KSClassDeclaration? = null
 
 	private val loadFunctions = arrayListOf<KSFunctionDeclaration>()
 
@@ -49,6 +49,9 @@ class PluginProcessor(
 		val loadSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(Load::class.qualifiedName))
 //		val userEntitySymbols = resolver.getSymbolsWithAnnotation(checkNotNull(UserEntity::class.qualifiedName))
 //		val tempUserEntitySymbols = resolver.getSymbolsWithAnnotation(checkNotNull(TempUserEntity::class.qualifiedName))
+
+		logger.info("Начата обработка")
+
 
 		val validPluginSymbols = pluginSymbols
 			.filterIsInstance<KSClassDeclaration>()
@@ -89,7 +92,6 @@ class PluginProcessor(
 
 	override fun finish() {
 		val annotation = plugin?.annotations?.findAnnotation<BankPlugin>() ?: return
-
 		val pluginClassName = plugin?.toClassName() ?: return
 		val pluginVariableName = WordUtils.uncapitalize(pluginClassName.simpleName)
 
@@ -97,6 +99,8 @@ class PluginProcessor(
 			?.getAllFunctions()
 			?.find { it.annotations.findAnnotation<Load>() != null }
 			?: return
+
+		logger.info("Generating code for plugin: $pluginClassName")
 
 		FileSpec.builder(PLUGIN_PACKAGE_NAME, PLUGIN_NAME)
 			.addType(
@@ -109,26 +113,24 @@ class PluginProcessor(
 							.build()
 					)
 					.apply {
-						val inject = annotation.getArgument<List<KSType>>("modules")
+						//val inject = annotation.getArgument<List<KSType>>("modules")
+						//userEntity?.let { user ->
+						//    injectProperty(
+						//        UserService::class.asClassName().parameterizedBy(user.toClassName()),
+						//        "userService"
+						//    )
+						//}
 
-//						userEntity?.let { user ->
-//							injectProperty(
-//								UserService::class.asClassName().parameterizedBy(user.toClassName()),
-//								"userService"
-//							)
-//						}
-
-						injectProperty(BankApp::class.asClassName(), "plugin")
+						//injectProperty(BankApp::class.asClassName(), "plugin")
 						injectProperty("me.skyscx.listener", "Listeners", "listeners")
 						//injectProperty("me.skyscx.command", "Commands", "commands")
 						//injectProperty("me.topilov.time", "TimeSchedulers", "timeSchedulers")
 
-
-						inject.forEach { type ->
-							val typeClassName = type.toClassName()
-							val propertyName = WordUtils.uncapitalize(typeClassName.simpleName)
-							injectProperty(typeClassName, propertyName)
-						}
+						//inject.forEach { type ->
+						//    val typeClassName = type.toClassName()
+						//    val propertyName = WordUtils.uncapitalize(typeClassName.simpleName)
+						//    injectProperty(typeClassName, propertyName)
+						//}
 
 						val componentClassName = ClassName(COMPONENT_PACKAGE_NAME, "Dagger${COMPONENT_NAME}")
 
@@ -144,7 +146,6 @@ class PluginProcessor(
 							onEnableFunction.addStatement("%M(%L)", memberName, parameters)
 						}
 
-
 						onEnableFunction.addStatement(
 							"%L.%L(this)",
 							pluginVariableName,
@@ -155,5 +156,8 @@ class PluginProcessor(
 					}.build()
 			).build()
 			.writeTo(codeGenerator = codeGenerator, aggregating = false)
+
+		logger.info("Code generation completed for plugin: $pluginClassName")
 	}
+
 }
