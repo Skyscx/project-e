@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>UnusedPrivateProperty:CustomProcessor.kt$CustomProcessor$private val codeGenerator: CodeGenerator</ID>
+    <ID>UnusedPrivateProperty:CustomProcessor.kt$CustomProcessor$private val options: Map&lt;String, String&gt;</ID>
+    <ID>UnusedPrivateProperty:CustomProcessor.kt$CustomProcessor$private val visitor = Visitor()</ID>
+    <ID>UnusedPrivateProperty:CustomProcessor.kt$CustomProcessor.Visitor$private lateinit var ksType: KSType</ID>
+    <ID>UnusedPrivateProperty:CustomProcessor.kt$CustomProcessor.Visitor$private lateinit var packageName: String</ID>
+  </CurrentIssues>
+</SmellBaseline>

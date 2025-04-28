@@ -1,0 +1,42 @@
+[versions]
+kotlin = "1.9.22"
+ksp = "1.9.22-1.0.17"
+shadow = "8.3.0"
+dagger = "2.50"
+kotlinpoet = "1.10.1"
+symbol-processing-api = "1.5.31-1.0.0"
+auto-service-annotations = "1.0"
+auto-service-ksp = "1.0.0"
+commons-lang = "3.0"
+fastutil-core = "8.5.8"
+kotlinx-coroutines-jdk8 = "1.6.4"
+kotlinx-coroutines-reactive = "1.7.3"
+json = "20211205"
+jackson = "2.14.2"
+paper-api = "1.21-R0.1-SNAPSHOT"
+run-paper = "2.3.1"
+
+[libraries]
+dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
+dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
+kotlinpoet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlinpoet" }
+kotlinpoet-ksp = { group = "com.squareup", name = "kotlinpoet-ksp", version.ref = "kotlinpoet" }
+symbol-processing-api = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "symbol-processing-api" }
+auto-service-annotations = { group = "com.google.auto.service", name = "auto-service-annotations", version.ref = "auto-service-annotations" }
+auto-service-ksp = { group = "dev.zacsweers.autoservice", name = "auto-service-ksp", version.ref = "auto-service-ksp" }
+commons-lang = { group = "org.apache.commons", name = "commons-lang3", version.ref = "commons-lang" }
+fastutil-core = { group = "it.unimi.dsi", name = "fastutil-core", version.ref = "fastutil-core" }
+kotlinx-coroutines-jdk8 = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines-jdk8" }
+kotlinx-coroutines-reactive = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactive", version.ref = "kotlinx-coroutines-reactive" }
+json = { group = "org.json", name = "json", version.ref = "json" }
+jackson-dataformat-yaml = { group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-yaml", version.ref = "jackson" }
+jackson-module-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8" }
+paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper-api" }
+
+[plugins]
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper"}
