@@ -1,163 +1,128 @@
-package me.skyscx.processor.plugin
-
-import com.google.devtools.ksp.processing.CodeGenerator
-import com.google.devtools.ksp.processing.KSPLogger
-import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.processing.SymbolProcessor
-import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.google.devtools.ksp.symbol.KSType
-import com.google.devtools.ksp.validate
-import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ksp.toClassName
-import com.squareup.kotlinpoet.ksp.writeTo
-import me.skyscx.annotation.Bank
-import me.skyscx.annotation.Load
-import me.skyscx.api.ApiApp
-import me.skyscx.api.utils.PluginHolder
-import me.skyscx.processor.plugin.component.COMPONENT_NAME
-import me.skyscx.processor.plugin.component.COMPONENT_PACKAGE_NAME
-import me.skyscx.processor.utils.findAnnotation
-import me.skyscx.processor.utils.getArgument
-import me.skyscx.processor.utils.injectProperty
-import org.apache.commons.lang3.text.WordUtils
-import org.bukkit.plugin.java.JavaPlugin
-
-/**
- * @created 27.04.2025
- * @author Skyscx
- **/
-
-const val PLUGIN_NAME = "BankPlugin"
-const val PLUGIN_PACKAGE_NAME = "me.skyscx"
-
-class PluginProcessor(
-	private val options: Map<String, String>,
-	private val codeGenerator: CodeGenerator,
-	private val logger: KSPLogger,
-) : SymbolProcessor {
-
-	private var plugin: KSClassDeclaration? = null
-//	private var userEntity: KSClassDeclaration? = null
-//	private var tempUserEntity: KSClassDeclaration? = null
-
-	private val loadFunctions = arrayListOf<KSFunctionDeclaration>()
-
-	override fun process(resolver: Resolver): List<KSAnnotated> {
-		val pluginSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(Bank::class.qualifiedName))
-		val loadSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(Load::class.qualifiedName))
-//		val userEntitySymbols = resolver.getSymbolsWithAnnotation(checkNotNull(UserEntity::class.qualifiedName))
-//		val tempUserEntitySymbols = resolver.getSymbolsWithAnnotation(checkNotNull(TempUserEntity::class.qualifiedName))
-
-		logger.info("Processing annotations...")
-
-
-		val validPluginSymbols = pluginSymbols
-			.filterIsInstance<KSClassDeclaration>()
-			.filter(KSAnnotated::validate)
-
-		val validLoadSymbols = loadSymbols
-			.filterIsInstance<KSFunctionDeclaration>()
-			.filter(KSAnnotated::validate)
-
-//		val validUserEntitySymbols = userEntitySymbols
+//package me.skyscx.processor.plugin
+//
+//import com.google.devtools.ksp.processing.CodeGenerator
+//import com.google.devtools.ksp.processing.KSPLogger
+//import com.google.devtools.ksp.processing.Resolver
+//import com.google.devtools.ksp.processing.SymbolProcessor
+//import com.google.devtools.ksp.symbol.KSAnnotated
+//import com.google.devtools.ksp.symbol.KSClassDeclaration
+//import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+//import com.google.devtools.ksp.symbol.KSType
+//import com.google.devtools.ksp.validate
+//import com.squareup.kotlinpoet.*
+//import com.squareup.kotlinpoet.ksp.toClassName
+//import com.squareup.kotlinpoet.ksp.writeTo
+//import me.skyscx.annotation.Bank
+//import me.skyscx.annotation.Entrypoint
+//import me.skyscx.annotation.Listener
+//import me.skyscx.annotation.Load
+//import me.skyscx.api.ApiApp
+//import me.skyscx.api.utils.PluginHolder
+//import me.skyscx.processor.plugin.component.COMPONENT_NAME
+//import me.skyscx.processor.plugin.component.COMPONENT_PACKAGE_NAME
+//import me.skyscx.processor.utils.findAnnotation
+//import me.skyscx.processor.utils.getArgument
+//import me.skyscx.processor.utils.injectProperty
+//import org.apache.commons.lang3.text.WordUtils
+//import org.bukkit.plugin.java.JavaPlugin
+//
+///**
+// * @created 27.04.2025
+// * @author Skyscx
+// **/
+//
+//const val PLUGIN_NAME = "BankApp"
+//const val PLUGIN_PACKAGE_NAME = "me.skyscx"
+//
+//class PluginProcessor(
+//	private val options: Map<String, String>,
+//	private val codeGenerator: CodeGenerator,
+//	private val logger: KSPLogger,
+//) : SymbolProcessor {
+//	private var plugin: KSClassDeclaration? = null
+//	private val loadFunctions = arrayListOf<KSFunctionDeclaration>()
+//
+//	override fun process(resolver: Resolver): List<KSAnnotated> {
+//		val entrypointSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(Entrypoint::class.qualifiedName))
+//		val loadSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(Load::class.qualifiedName))
+//
+//		val validEntrypointSymbols = entrypointSymbols
 //			.filterIsInstance<KSClassDeclaration>()
 //			.filter(KSAnnotated::validate)
 //
-//		val validTempUserEntitySymbols = tempUserEntitySymbols
-//			.filterIsInstance<KSClassDeclaration>()
+//		val validLoadSymbols = loadSymbols
+//			.filterIsInstance<KSFunctionDeclaration>()
 //			.filter(KSAnnotated::validate)
-
-		validPluginSymbols.firstOrNull()?.let { plugin ->
-			this.plugin = plugin
-		}
-
-//		validUserEntitySymbols.firstOrNull()?.let { userEntity ->
-//			this.userEntity = userEntity
+//
+//
+//		validEntrypointSymbols.firstOrNull()?.let { plugin ->
+//			this.plugin = plugin
 //		}
 //
-//		validTempUserEntitySymbols.firstOrNull()?.let { tempUserEntity ->
-//			this.tempUserEntity = tempUserEntity
+//		validLoadSymbols.filter { it.parentDeclaration == null }.forEach { symbol ->
+//			loadFunctions.add(symbol)
 //		}
-
-		validLoadSymbols.filter { it.parentDeclaration == null }.forEach { symbol ->
-			loadFunctions.add(symbol)
-		}
-
-		return pluginSymbols.filterNot { it in validPluginSymbols }.toList() +
-				loadSymbols.filterNot { it in validLoadSymbols }
-		//			+ userEntitySymbols.filterNot { it in validUserEntitySymbols }
-	}
-
-	override fun finish() {
-		val annotation = plugin?.annotations?.findAnnotation<Bank>() ?: return
-		val pluginClassName = plugin?.toClassName() ?: return
-		val pluginVariableName = WordUtils.uncapitalize(pluginClassName.simpleName)
-
-		val loadFunction = plugin
-			?.getAllFunctions()
-			?.find { it.annotations.findAnnotation<Load>() != null }
-			?: return
-
-		logger.info("Finishing code generation...")
-
-		FileSpec.builder(PLUGIN_PACKAGE_NAME, PLUGIN_NAME)
-			.addType(
-				TypeSpec.classBuilder(PLUGIN_NAME)
-					.superclass(JavaPlugin::class)
-					.addProperty(
-						PropertySpec.builder(pluginVariableName, pluginClassName)
-							.addModifiers(KModifier.PRIVATE)
-							.initializer("%T()", pluginClassName)
-							.build()
-					)
-					.apply {
-						//val inject = annotation.getArgument<List<KSType>>("modules")
-						//userEntity?.let { user ->
-						//    injectProperty(
-						//        UserService::class.asClassName().parameterizedBy(user.toClassName()),
-						//        "userService"
-						//    )
-						//}
-
-						//injectProperty(BankApp::class.asClassName(), "plugin")
-						injectProperty("me.skyscx.listener", "Listeners", "listeners")
-						//injectProperty("me.skyscx.command", "Commands", "commands")
-						//injectProperty("me.topilov.time", "TimeSchedulers", "timeSchedulers")
-
-						//inject.forEach { type ->
-						//    val typeClassName = type.toClassName()
-						//    val propertyName = WordUtils.uncapitalize(typeClassName.simpleName)
-						//    injectProperty(typeClassName, propertyName)
-						//}
-
-						val componentClassName = ClassName(COMPONENT_PACKAGE_NAME, "Dagger${COMPONENT_NAME}")
-
-						val onEnableFunction = FunSpec.builder("onEnable")
-							.addModifiers(KModifier.OVERRIDE)
-							.addStatement("%T.plugin = this", PluginHolder::class)
-							.addStatement("%T.factory().create(this).inject(this)", componentClassName)
-
-						loadFunctions.forEach { loadFunction ->
-							val memberName = MemberName(loadFunction.packageName.asString(), loadFunction.simpleName.asString())
-							val parameters = loadFunction.parameters.joinToString(",") { parameter -> injectProperty(parameter) }
-
-							onEnableFunction.addStatement("%M(%L)", memberName, parameters)
-						}
-
-						onEnableFunction.addStatement(
-							"%L.%L(this)",
-							pluginVariableName,
-							loadFunction.simpleName.asString()
-						)
-
-						addFunction(onEnableFunction.build())
-					}.build()
-			).build()
-			.writeTo(codeGenerator = codeGenerator, aggregating = false)
-
-		logger.info("Code generation completed for plugin: $pluginClassName")
-	}
-
-}
+//
+//		return entrypointSymbols.filterNot { it in validEntrypointSymbols }.toList() +
+//				loadSymbols.filterNot { it in validLoadSymbols }
+//	}
+//
+//	override fun finish() {
+//		val annotation = plugin?.annotations?.findAnnotation<Bank>() ?: return
+//
+//		val entrypointClassName = plugin?.toClassName() ?: return
+//		val pluginVariableName = WordUtils.uncapitalize(entrypointClassName.simpleName)
+//
+//		val loadFunction = plugin
+//			?.getAllFunctions()
+//			?.find { it.annotations.findAnnotation<Load>() != null }
+//			?: return
+//
+//		FileSpec.builder(PLUGIN_PACKAGE_NAME, PLUGIN_NAME)
+//			.addType(
+//				TypeSpec.classBuilder(PLUGIN_NAME)
+//					.superclass(JavaPlugin::class)
+//					.addProperty(
+//						PropertySpec.builder(pluginVariableName, entrypointClassName)
+//							.addModifiers(KModifier.PRIVATE)
+//							.initializer("%T()", entrypointClassName)
+//							.build()
+//					)
+//					.apply {
+//						val inject = annotation.getArgument<List<KSType>>("modules")
+//
+//						injectProperty("me.skyscx.listener", "Listeners", "listeners")
+//
+//						inject.forEach { type ->
+//							val typeClassName = type.toClassName()
+//							val propertyName = WordUtils.uncapitalize(typeClassName.simpleName)
+//							injectProperty(typeClassName, propertyName)
+//						}
+//
+//						val componentClassName = ClassName(COMPONENT_PACKAGE_NAME, "Dagger${COMPONENT_NAME}")
+//
+//						val onEnableFunction = FunSpec.builder("onEnable")
+//							.addModifiers(KModifier.OVERRIDE)
+//							.addStatement("%T.plugin = this", PluginHolder::class)
+//							.addStatement("%T.factory().create(this).inject(this)", componentClassName)
+//
+//						loadFunctions.forEach { loadFunction ->
+//							val memberName = MemberName(loadFunction.packageName.asString(), loadFunction.simpleName.asString())
+//							val parameters = loadFunction.parameters.joinToString(",") { parameter -> injectProperty(parameter) }
+//
+//							onEnableFunction.addStatement("%M(%L)", memberName, parameters)
+//						}
+//
+//
+//						onEnableFunction.addStatement(
+//							"%L.%L(this)",
+//							pluginVariableName,
+//							loadFunction.simpleName.asString()
+//						)
+//
+//						addFunction(onEnableFunction.build())
+//					}.build()
+//			).build()
+//			.writeTo(codeGenerator = codeGenerator, aggregating = false)
+//	}
+//}

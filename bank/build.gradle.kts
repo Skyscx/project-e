@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.ksp)
-//    kotlin("kapt") version "1.9.22"
+//    alias(libs.plugins.kapt)
     alias(libs.plugins.shadow)
 }
 
@@ -31,7 +31,7 @@ dependencies {
 tasks {
     jar { enabled = false }
     build { dependsOn(shadowJar) }
-    shadowJar { archiveFileName.set("katana.jar") }
+    shadowJar { archiveFileName.set("bank.jar") }
 }
 
 tasks.withType<com.google.devtools.ksp.gradle.KspTask> {
@@ -43,7 +43,7 @@ tasks.withType<com.google.devtools.ksp.gradle.KspTask> {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     withSourcesJar()
 }
 
@@ -51,7 +51,7 @@ tasks {
     withType<JavaCompile>().configureEach { options.encoding = "UTF-8" }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions {
-            jvmTarget = "1.8"
+            jvmTarget = "21"
         }
     }
 }

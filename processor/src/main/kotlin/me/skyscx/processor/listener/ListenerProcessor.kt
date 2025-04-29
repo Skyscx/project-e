@@ -8,7 +8,6 @@ import com.google.devtools.ksp.symbol.*
 import com.google.devtools.ksp.validate
 import com.google.devtools.ksp.visitor.KSDefaultVisitor
 import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import me.skyscx.annotation.Listener
@@ -30,7 +29,7 @@ class ListenerProcessor(
 ) : SymbolProcessor {
 
 	private val configuredName = "Listeners"
-	private val packageName = "me.skyscx.bank.listener"
+	private val packageName = "me.skyscx.listener"
 
 	private val injectParameters = arrayListOf<KSValueParameter>()
 
@@ -40,10 +39,10 @@ class ListenerProcessor(
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		val listenerSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(Listener::class.qualifiedName))
-		logger.info("Найдено $listenerSymbols символов с аннотацией @Listener")
 
-		val validListenerSymbols =
-			listenerSymbols.filterIsInstance<KSFunctionDeclaration>().filter(KSAnnotated::validate)
+		val validListenerSymbols = listenerSymbols
+			.filterIsInstance<KSFunctionDeclaration>()
+			.filter(KSAnnotated::validate)
 
 		validListenerSymbols.forEach { symbol ->
 			symbol.accept(listenerVisitor, listenersData).forEach { injectParameter ->
@@ -54,30 +53,34 @@ class ListenerProcessor(
 		return listenerSymbols.filterNot { it in validListenerSymbols }.toList()
 	}
 
-	@OptIn(KotlinPoetKspPreview::class)
 	override fun finish() {
-		logger.info("Начинаю генерацию кода для регистрации слушателей")
+		val classTypeBuilder = TypeSpec.classBuilder(configuredName)
+			.addAnnotation(Singleton::class)
 
-		val classTypeBuilder = TypeSpec.classBuilder(configuredName).addAnnotation(Singleton::class)
-
-		val primaryConstructorBuilder = FunSpec.constructorBuilder().addAnnotation(Inject::class)
+		val primaryConstructorBuilder = FunSpec.constructorBuilder()
+			.addAnnotation(Inject::class)
 
 		injectParameters.forEach { parameter ->
 			parameter.inject(primaryConstructorBuilder, classTypeBuilder)
 		}
 
-		FileSpec.builder(packageName, configuredName).addType(classTypeBuilder.build()).build()
+		FileSpec.builder(packageName, configuredName)
+			.addImport("me.skyscx.api.utils", "subscribe")
+			.addType(
+				classTypeBuilder
+					.primaryConstructor(primaryConstructorBuilder.build())
+					.addInitializerBlock(listenersData.codeBlock.build())
+					.build()
+			)
+			.build()
 			.writeTo(codeGenerator = codeGenerator, aggregating = false)
-		logger.info("Код успешно сгенерирован")
-
 	}
 
 	private inner class ListenerVisitor : KSDefaultVisitor<ListenerData, List<KSValueParameter>>() {
-		@OptIn(KotlinPoetKspPreview::class)
 		override fun visitFunctionDeclaration(
-			function: KSFunctionDeclaration, data: ListenerData
+			function: KSFunctionDeclaration,
+			data: ListenerData
 		): List<KSValueParameter> {
-			logger.info("Обрабатываю функцию: ${function.simpleName}")
 			val injectParameters = function.parameters
 			val packageName = function.packageName.asString()
 			val name = function.simpleName.asString()
@@ -93,8 +96,7 @@ class ListenerProcessor(
 			val functionMemberName = MemberName(packageName, name)
 
 			data.codeBlock.apply {
-				// Исправлено: передаем только два аргумента в beginControlFlow
-				beginControlFlow("subscribe<%T>(%L)", receiverType, needFilter)
+				beginControlFlow("subscribe<%T>(%L, %L)", receiverType, needFilter, priority)
 				addStatement("%M(%L)", functionMemberName, parameters)
 				endControlFlow()
 			}
@@ -106,7 +108,6 @@ class ListenerProcessor(
 			return emptyList()
 		}
 	}
-
 }
 
 data class ListenerData(

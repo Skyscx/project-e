@@ -11,4 +11,6 @@ import org.bukkit.event.player.PlayerJoinEvent
 @Listener
 internal fun PlayerJoinEvent.welcome() {
 	player.sendMessage("Здарова заебал!")
+	println("${player.name} + connected!")
+
 }

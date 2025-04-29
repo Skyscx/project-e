@@ -1,5 +1,7 @@
 package me.skyscx.bank
 
+import me.skyscx.annotation.Bank
+import me.skyscx.annotation.Entrypoint
 import me.skyscx.annotation.Load
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.PrintWriter
@@ -13,7 +15,11 @@ import java.util.logging.Logger
  * @author Skyscx
  **/
 
-class BankApp {
+@Entrypoint(
+	modules = [ ]
+)
+
+class BankApp : JavaPlugin() {
 	@Load
 	fun load(plugin: JavaPlugin){
 		Logger.getLogger("").addHandler(object : Handler() {
@@ -30,4 +36,5 @@ class BankApp {
 			override fun close() {}
 		})
 	}
+
 }

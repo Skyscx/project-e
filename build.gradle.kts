@@ -31,7 +31,7 @@ subprojects {
     apply(plugin = "maven-publish")
 
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
         withSourcesJar()
     }
 
@@ -39,7 +39,7 @@ subprojects {
         withType<JavaCompile>().configureEach { options.encoding = "UTF-8" }
         withType<KotlinCompile>().configureEach {
             kotlinOptions {
-                jvmTarget = "1.8"
+                jvmTarget = "21"
                 freeCompilerArgs = listOf(
                     "-Xlambdas=indy",
                     "-Xno-param-assertions",
