@@ -12,6 +12,7 @@ import java.util.logging.Logger
  * @created 27.04.2025
  * @author Skyscx
  **/
+
 class BankApp {
 	@Load
 	fun load(plugin: JavaPlugin){

@@ -20,7 +20,7 @@ dependencies {
     implementation(project(":annotation"))
     implementation(project(":bank"))
 
-    kspTest(project(":ksp"))
+    //kspTest(project(":ksp"))
 
 
     implementation(libs.symbol.processing.api)

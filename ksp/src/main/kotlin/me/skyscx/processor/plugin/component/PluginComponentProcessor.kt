@@ -39,6 +39,7 @@ class PluginComponentProcessor(
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		val componentSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(PluginComponent::class.qualifiedName))
+		logger.info("Processing annotations...")
 
 		val validComponentSymbols = componentSymbols
 			.filterIsInstance<KSClassDeclaration>()
@@ -53,21 +54,22 @@ class PluginComponentProcessor(
 
 	override fun finish() {
 		val annotation = component?.annotations?.findAnnotation<PluginComponent>() ?: return
-		val modules = annotation.getArgument<List<KSType>>("modules")
+//		val modules = annotation.getArgument<List<KSType>>("modules")
+		logger.info("Finishing code generation...")
 
-		val moduleClasses = modules.joinToString(",") { module ->
-			"${module.toClassName()}::class"
-		}
+//		val moduleClasses = modules.joinToString(",") { module ->
+//			"${module.toClassName()}::class"
+//		}
 
 		FileSpec.builder(COMPONENT_PACKAGE_NAME, COMPONENT_NAME)
 			.addType(
 				TypeSpec.interfaceBuilder(COMPONENT_NAME)
 					.addAnnotation(Singleton::class)
-					.addAnnotation(
-						AnnotationSpec.builder(Component::class)
-							.addMember("modules = [%L]", moduleClasses)
-							.build()
-					)
+//					.addAnnotation(
+//						AnnotationSpec.builder(Component::class)
+//							.addMember("modules = [%L]", moduleClasses)
+//							.build()
+//					)
 					.addFunction(
 						FunSpec.builder("inject")
 							.addModifiers(KModifier.ABSTRACT)

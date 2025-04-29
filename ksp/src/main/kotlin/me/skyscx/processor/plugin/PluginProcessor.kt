@@ -7,19 +7,16 @@ import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
-import me.skyscx.annotation.BankPlugin
+import me.skyscx.annotation.Bank
 import me.skyscx.annotation.Load
-import me.skyscx.bank.BankApp
 import me.skyscx.bank.utils.PluginHolder
 import me.skyscx.processor.plugin.component.COMPONENT_NAME
 import me.skyscx.processor.plugin.component.COMPONENT_PACKAGE_NAME
 import me.skyscx.processor.utils.findAnnotation
-import me.skyscx.processor.utils.getArgument
 import me.skyscx.processor.utils.injectProperty
 import org.apache.commons.lang3.text.WordUtils
 import org.bukkit.plugin.java.JavaPlugin
@@ -45,12 +42,12 @@ class PluginProcessor(
 	private val loadFunctions = arrayListOf<KSFunctionDeclaration>()
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
-		val pluginSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(BankPlugin::class.qualifiedName))
+		val pluginSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(Bank::class.qualifiedName))
 		val loadSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(Load::class.qualifiedName))
 //		val userEntitySymbols = resolver.getSymbolsWithAnnotation(checkNotNull(UserEntity::class.qualifiedName))
 //		val tempUserEntitySymbols = resolver.getSymbolsWithAnnotation(checkNotNull(TempUserEntity::class.qualifiedName))
 
-		logger.info("Начата обработка")
+		logger.info("Processing annotations...")
 
 
 		val validPluginSymbols = pluginSymbols
@@ -91,7 +88,7 @@ class PluginProcessor(
 	}
 
 	override fun finish() {
-		val annotation = plugin?.annotations?.findAnnotation<BankPlugin>() ?: return
+		val annotation = plugin?.annotations?.findAnnotation<Bank>() ?: return
 		val pluginClassName = plugin?.toClassName() ?: return
 		val pluginVariableName = WordUtils.uncapitalize(pluginClassName.simpleName)
 
@@ -100,7 +97,7 @@ class PluginProcessor(
 			?.find { it.annotations.findAnnotation<Load>() != null }
 			?: return
 
-		logger.info("Generating code for plugin: $pluginClassName")
+		logger.info("Finishing code generation...")
 
 		FileSpec.builder(PLUGIN_PACKAGE_NAME, PLUGIN_NAME)
 			.addType(

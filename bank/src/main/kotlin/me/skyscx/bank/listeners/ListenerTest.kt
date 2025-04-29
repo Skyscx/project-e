@@ -1,4 +1,4 @@
-package me.skyscx.bank
+package me.skyscx.bank.listeners
 
 import me.skyscx.annotation.Listener
 import org.bukkit.event.player.PlayerJoinEvent

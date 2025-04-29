@@ -11,6 +11,6 @@ import me.skyscx.protocol.Module
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class BankPlugin(
+annotation class Bank(
 	val modules: Array<KClass<out Module>>,
 )
