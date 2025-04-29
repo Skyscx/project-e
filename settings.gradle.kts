@@ -28,4 +28,5 @@ rootProject.name = "project-e"
 include(":annotation")
 include(":bank")
 include(":protocol")
-include(":ksp")
+include(":processor")
+include(":api")

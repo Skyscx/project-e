@@ -1,4 +1,4 @@
-package me.skyscx.bank.utils
+package me.skyscx.api.utils
 
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority

@@ -93,7 +93,8 @@ class ListenerProcessor(
 			val functionMemberName = MemberName(packageName, name)
 
 			data.codeBlock.apply {
-				beginControlFlow("subscribe<%T>(%L)", receiverType, needFilter, priority)
+				// Исправлено: передаем только два аргумента в beginControlFlow
+				beginControlFlow("subscribe<%T>(%L)", receiverType, needFilter)
 				addStatement("%M(%L)", functionMemberName, parameters)
 				endControlFlow()
 			}
@@ -105,6 +106,7 @@ class ListenerProcessor(
 			return emptyList()
 		}
 	}
+
 }
 
 data class ListenerData(

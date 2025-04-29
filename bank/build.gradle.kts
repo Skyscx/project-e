@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.ksp)
+//    kotlin("kapt") version "1.9.22"
+    alias(libs.plugins.shadow)
 }
 
 group = "me.skyscx"
@@ -19,20 +21,17 @@ repositories {
 dependencies {
     compileOnlyApi(libs.paper)
 
-    api(project(":annotation"))
-    implementation(project(":protocol"))
-
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlinx.coroutines.reactive)
-    api(libs.humanize)
-    api(libs.kotlinx.coroutines.jdk8)
-    api(libs.dagger)
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(project(":api"))
     ksp(libs.dagger.compiler)
-    api(libs.jackson.module.kotlin)
+
+    ksp(project(":processor"))
 }
 
-tasks.test {
-    useJUnitPlatform()
+tasks {
+    jar { enabled = false }
+    build { dependsOn(shadowJar) }
+    shadowJar { archiveFileName.set("katana.jar") }
 }
 
 tasks.withType<com.google.devtools.ksp.gradle.KspTask> {

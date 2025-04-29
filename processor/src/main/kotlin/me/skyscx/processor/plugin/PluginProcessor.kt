@@ -12,10 +12,10 @@ import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
-import me.skyscx.annotation.BankPlugin
+import me.skyscx.annotation.Bank
 import me.skyscx.annotation.Load
-import me.skyscx.bank.BankApp
-import me.skyscx.bank.utils.PluginHolder
+import me.skyscx.api.ApiApp
+import me.skyscx.api.utils.PluginHolder
 import me.skyscx.processor.plugin.component.COMPONENT_NAME
 import me.skyscx.processor.plugin.component.COMPONENT_PACKAGE_NAME
 import me.skyscx.processor.utils.findAnnotation
@@ -39,16 +39,19 @@ class PluginProcessor(
 ) : SymbolProcessor {
 
 	private var plugin: KSClassDeclaration? = null
-	private var userEntity: KSClassDeclaration? = null
-	private var tempUserEntity: KSClassDeclaration? = null
+//	private var userEntity: KSClassDeclaration? = null
+//	private var tempUserEntity: KSClassDeclaration? = null
 
 	private val loadFunctions = arrayListOf<KSFunctionDeclaration>()
 
 	override fun process(resolver: Resolver): List<KSAnnotated> {
-		val pluginSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(BankPlugin::class.qualifiedName))
+		val pluginSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(Bank::class.qualifiedName))
 		val loadSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(Load::class.qualifiedName))
 //		val userEntitySymbols = resolver.getSymbolsWithAnnotation(checkNotNull(UserEntity::class.qualifiedName))
 //		val tempUserEntitySymbols = resolver.getSymbolsWithAnnotation(checkNotNull(TempUserEntity::class.qualifiedName))
+
+		logger.info("Processing annotations...")
+
 
 		val validPluginSymbols = pluginSymbols
 			.filterIsInstance<KSClassDeclaration>()
@@ -84,12 +87,11 @@ class PluginProcessor(
 
 		return pluginSymbols.filterNot { it in validPluginSymbols }.toList() +
 				loadSymbols.filterNot { it in validLoadSymbols }
-	//			+ userEntitySymbols.filterNot { it in validUserEntitySymbols }
+		//			+ userEntitySymbols.filterNot { it in validUserEntitySymbols }
 	}
 
 	override fun finish() {
-		val annotation = plugin?.annotations?.findAnnotation<BankPlugin>() ?: return
-
+		val annotation = plugin?.annotations?.findAnnotation<Bank>() ?: return
 		val pluginClassName = plugin?.toClassName() ?: return
 		val pluginVariableName = WordUtils.uncapitalize(pluginClassName.simpleName)
 
@@ -97,6 +99,8 @@ class PluginProcessor(
 			?.getAllFunctions()
 			?.find { it.annotations.findAnnotation<Load>() != null }
 			?: return
+
+		logger.info("Finishing code generation...")
 
 		FileSpec.builder(PLUGIN_PACKAGE_NAME, PLUGIN_NAME)
 			.addType(
@@ -109,26 +113,24 @@ class PluginProcessor(
 							.build()
 					)
 					.apply {
-						val inject = annotation.getArgument<List<KSType>>("modules")
+						//val inject = annotation.getArgument<List<KSType>>("modules")
+						//userEntity?.let { user ->
+						//    injectProperty(
+						//        UserService::class.asClassName().parameterizedBy(user.toClassName()),
+						//        "userService"
+						//    )
+						//}
 
-//						userEntity?.let { user ->
-//							injectProperty(
-//								UserService::class.asClassName().parameterizedBy(user.toClassName()),
-//								"userService"
-//							)
-//						}
-
-						injectProperty(BankApp::class.asClassName(), "plugin")
+						//injectProperty(BankApp::class.asClassName(), "plugin")
 						injectProperty("me.skyscx.listener", "Listeners", "listeners")
 						//injectProperty("me.skyscx.command", "Commands", "commands")
 						//injectProperty("me.topilov.time", "TimeSchedulers", "timeSchedulers")
 
-
-						inject.forEach { type ->
-							val typeClassName = type.toClassName()
-							val propertyName = WordUtils.uncapitalize(typeClassName.simpleName)
-							injectProperty(typeClassName, propertyName)
-						}
+						//inject.forEach { type ->
+						//    val typeClassName = type.toClassName()
+						//    val propertyName = WordUtils.uncapitalize(typeClassName.simpleName)
+						//    injectProperty(typeClassName, propertyName)
+						//}
 
 						val componentClassName = ClassName(COMPONENT_PACKAGE_NAME, "Dagger${COMPONENT_NAME}")
 
@@ -144,7 +146,6 @@ class PluginProcessor(
 							onEnableFunction.addStatement("%M(%L)", memberName, parameters)
 						}
 
-
 						onEnableFunction.addStatement(
 							"%L.%L(this)",
 							pluginVariableName,
@@ -155,5 +156,8 @@ class PluginProcessor(
 					}.build()
 			).build()
 			.writeTo(codeGenerator = codeGenerator, aggregating = false)
+
+		logger.info("Code generation completed for plugin: $pluginClassName")
 	}
+
 }
