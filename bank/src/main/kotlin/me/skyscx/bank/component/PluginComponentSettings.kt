@@ -1,6 +1,7 @@
 package me.skyscx.bank.component
 
 import me.skyscx.annotation.PluginComponent
+import me.skyscx.api.di.PluginModule
 
 /**
  * @created 29.04.2025
@@ -8,6 +9,6 @@ import me.skyscx.annotation.PluginComponent
  **/
 
 @PluginComponent(
-    modules = [],
+    modules = [PluginModule::class],
 )
 interface PluginComponentSettings

@@ -1,10 +1,10 @@
-package me.skyscx.annotation
+package me.skyscx.annotation.commands
 
 /**
- * @created 27.04.2025
+ * @created 30.04.2025
  * @author Skyscx
  **/
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
-annotation class ArgInject
+annotation class Args

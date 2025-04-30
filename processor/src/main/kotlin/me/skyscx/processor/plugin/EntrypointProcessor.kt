@@ -14,6 +14,7 @@ import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.writeTo
 import me.skyscx.annotation.Entrypoint
 import me.skyscx.annotation.Load
+import me.skyscx.api.ApiApp
 import me.skyscx.api.utils.PluginHolder
 import me.skyscx.processor.plugin.component.COMPONENT_NAME
 import me.skyscx.processor.plugin.component.COMPONENT_PACKAGE_NAME
@@ -88,7 +89,9 @@ class EntrypointProcessor(
 					.apply {
 						val inject = annotation.getArgument<List<KSType>>("modules")
 
+						injectProperty(ApiApp::class.asClassName(), "plugin")
 						injectProperty("me.skyscx.listener", "Listeners", "listeners")
+						injectProperty("me.skyscx.command", "Commands", "commands")
 
 						inject.forEach { type ->
 							val typeClassName = type.toClassName()

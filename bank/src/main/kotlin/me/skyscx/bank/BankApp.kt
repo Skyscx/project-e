@@ -2,6 +2,7 @@ package me.skyscx.bank
 
 import me.skyscx.annotation.Entrypoint
 import me.skyscx.annotation.Load
+import me.skyscx.api.di.PluginModule
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -15,7 +16,7 @@ import java.util.logging.Logger
  **/
 
 @Entrypoint(
-	modules = [ ]
+	modules = []
 )
 
 class BankApp {

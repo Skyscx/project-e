@@ -6,7 +6,7 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
-import me.skyscx.annotation.ArgInject
+import me.skyscx.annotation.commands.ArgInject
 import org.apache.commons.lang3.text.WordUtils
 import javax.inject.Inject
 
