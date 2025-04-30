@@ -63,10 +63,6 @@ class ListenerProcessor(
 			parameter.inject(primaryConstructorBuilder, classTypeBuilder)
 		}
 
-		listenersData.codeBlock.apply {
-			addStatement("println(\"INIT\")")
-		}
-
 		FileSpec.builder(packageName, configuredName)
 			.addImport("me.skyscx.api.utils", "listener")
 			.addType(
