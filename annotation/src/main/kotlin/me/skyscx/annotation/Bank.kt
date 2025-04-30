@@ -3,7 +3,6 @@ package me.skyscx.annotation
 import kotlin.reflect.KClass
 import me.skyscx.protocol.Module
 
-
 /**
  * @created 27.04.2025
  * @author Skyscx

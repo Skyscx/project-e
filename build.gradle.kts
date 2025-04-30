@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.kotlin) apply false
     alias(libs.plugins.shadow) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.kapt) apply  false
+
 }
 
 group = "me.skyscx"

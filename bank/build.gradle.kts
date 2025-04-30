@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.ksp)
-//    alias(libs.plugins.kapt)
+    alias(libs.plugins.kapt)
     alias(libs.plugins.shadow)
 }
 
@@ -23,7 +23,7 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
     implementation(project(":api"))
-    ksp(libs.dagger.compiler)
+    kapt(libs.dagger.compiler)
 
     ksp(project(":processor"))
 }

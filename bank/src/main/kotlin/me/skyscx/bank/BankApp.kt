@@ -1,6 +1,5 @@
 package me.skyscx.bank
 
-import me.skyscx.annotation.Bank
 import me.skyscx.annotation.Entrypoint
 import me.skyscx.annotation.Load
 import org.bukkit.plugin.java.JavaPlugin
@@ -19,7 +18,7 @@ import java.util.logging.Logger
 	modules = [ ]
 )
 
-class BankApp : JavaPlugin() {
+class BankApp {
 	@Load
 	fun load(plugin: JavaPlugin){
 		Logger.getLogger("").addHandler(object : Handler() {
@@ -27,7 +26,6 @@ class BankApp : JavaPlugin() {
 				if (record.thrown != null) {
 					val errors = StringWriter()
 					record.thrown.printStackTrace(PrintWriter(errors))
-					// logBot(errors.toString())
 				}
 			}
 

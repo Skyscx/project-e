@@ -43,7 +43,6 @@ class ListenerProcessor(
 		val validListenerSymbols = listenerSymbols
 			.filterIsInstance<KSFunctionDeclaration>()
 			.filter(KSAnnotated::validate)
-
 		validListenerSymbols.forEach { symbol ->
 			symbol.accept(listenerVisitor, listenersData).forEach { injectParameter ->
 				injectParameters.add(injectParameter)
@@ -64,8 +63,12 @@ class ListenerProcessor(
 			parameter.inject(primaryConstructorBuilder, classTypeBuilder)
 		}
 
+		listenersData.codeBlock.apply {
+			addStatement("println(\"INIT\")")
+		}
+
 		FileSpec.builder(packageName, configuredName)
-			.addImport("me.skyscx.api.utils", "subscribe")
+			.addImport("me.skyscx.api.utils", "listener")
 			.addType(
 				classTypeBuilder
 					.primaryConstructor(primaryConstructorBuilder.build())
@@ -86,7 +89,6 @@ class ListenerProcessor(
 			val name = function.simpleName.asString()
 			val receiverType = function.extensionReceiver?.toTypeName()
 			val annotation = function.annotations.findAnnotation<Listener>()
-			val needFilter = annotation?.getArgument<Boolean>("needFilter")
 			val priority = annotation?.getArgument<KSType>("priority")
 
 			val parameters = injectParameters.map { parameter ->
@@ -96,7 +98,7 @@ class ListenerProcessor(
 			val functionMemberName = MemberName(packageName, name)
 
 			data.codeBlock.apply {
-				beginControlFlow("subscribe<%T>(%L, %L)", receiverType, needFilter, priority)
+				beginControlFlow("listener<%T>(%L)", receiverType, priority)
 				addStatement("%M(%L)", functionMemberName, parameters)
 				endControlFlow()
 			}

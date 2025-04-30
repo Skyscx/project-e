@@ -28,7 +28,7 @@ import org.bukkit.plugin.java.JavaPlugin
  * @author Skyscx
  **/
 
-const val PLUGIN_NAME = "BankApp"
+const val PLUGIN_NAME = "BankPlugin"
 const val PLUGIN_PACKAGE_NAME = "me.skyscx"
 
 class EntrypointProcessor(

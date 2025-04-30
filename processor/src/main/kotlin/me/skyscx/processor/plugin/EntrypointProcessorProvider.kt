@@ -12,7 +12,6 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 
 @AutoService(SymbolProcessorProvider::class)
 class EntrypointProcessorProvider : SymbolProcessorProvider {
-
 	override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
 		return EntrypointProcessor(
 			options = environment.options,

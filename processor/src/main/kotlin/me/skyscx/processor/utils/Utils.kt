@@ -14,6 +14,7 @@ import javax.inject.Inject
  * @created 27.04.2025
  * @author Skyscx
  **/
+
 typealias Parameters = Collection<KSValueParameter>
 
 fun <T : Any> KSAnnotation.getArgument(name: String): T {

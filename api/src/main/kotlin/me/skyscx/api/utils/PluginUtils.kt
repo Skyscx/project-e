@@ -1,7 +1,6 @@
 package me.skyscx.api.utils
 
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.Server
 import org.bukkit.plugin.Plugin
 

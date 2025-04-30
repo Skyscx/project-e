@@ -26,7 +26,7 @@ import javax.inject.Singleton
  * @author Skyscx
  **/
 
-const val COMPONENT_NAME = "PluginComponent"
+const val COMPONENT_NAME = "BankComponent"
 const val COMPONENT_PACKAGE_NAME = "me.skyscx.di.component"
 
 class PluginComponentProcessor(
@@ -37,11 +37,8 @@ class PluginComponentProcessor(
 
 	private var component: KSClassDeclaration? = null
 
-
 	override fun process(resolver: Resolver): List<KSAnnotated> {
 		val componentSymbols = resolver.getSymbolsWithAnnotation(checkNotNull(PluginComponent::class.qualifiedName))
-		logger.info("Processing annotations...")
-
 		val validComponentSymbols = componentSymbols
 			.filterIsInstance<KSClassDeclaration>()
 			.filter(KSAnnotated::validate)
@@ -56,8 +53,6 @@ class PluginComponentProcessor(
 	override fun finish() {
 		val annotation = component?.annotations?.findAnnotation<PluginComponent>() ?: return
 		val modules = annotation.getArgument<List<KSType>>("modules")
-		logger.info("Finishing code generation...")
-
 		val moduleClasses = modules.joinToString(",") { module ->
 			"${module.toClassName()}::class"
 		}
